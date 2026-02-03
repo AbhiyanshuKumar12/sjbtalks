@@ -1,0 +1,162 @@
+:root {
+  --bg: #0b0f1a;
+  --card: #12182b;
+  --neon: #7cf5ff;
+  --pink: #ff6ad5;
+  --muted: #8b93b8;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.hidden {
+  display: none;
+}
+
+/* JOIN SCREEN */
+.join-screen {
+  background: #0f1424;
+  padding: 24px;
+  border-radius: 16px;
+  width: 340px;
+  box-shadow: 0 0 30px rgba(124,245,255,0.08);
+}
+
+.join-screen h2 {
+  color: var(--neon);
+}
+
+.label {
+  margin-top: 16px;
+  color: var(--muted);
+}
+
+.join-screen input[type="text"] {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: var(--card);
+  color: white;
+}
+
+.join-screen button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--neon), var(--pink));
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* CHAT UI */
+.app {
+  width: 380px;
+  height: 600px;
+  background: #0f1424;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 16px;
+  border-bottom: 1px solid #1e2440;
+  color: var(--neon);
+  font-weight: 600;
+}
+
+.messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.msg {
+  background: var(--card);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  animation: fadeUp 0.2s ease;
+}
+
+.msg .user {
+  color: var(--neon);
+  font-size: 0.8em;
+  margin-bottom: 4px;
+}
+
+.msg.system {
+  background: transparent;
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+.input-bar {
+  display: flex;
+  border-top: 1px solid #1e2440;
+}
+
+.input-bar input {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+}
+
+.input-bar button {
+  background: transparent;
+  border: none;
+  color: var(--neon);
+  font-size: 18px;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reactions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.9em;
+  opacity: 0.85;
+}
+
+.reactions span {
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.reactions span:hover {
+  transform: scale(1.2);
+}
+
+
+.typing {
+  padding: 6px 16px;
+  font-size: 0.85em;
+  color: var(--muted);
+  font-style: italic;
+}

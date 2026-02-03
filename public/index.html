@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sjb.talks</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- JOIN SCREEN -->
+<div class="join-screen" id="joinScreen">
+    <h2>⚡ sjb.talks</h2>
+
+    <p class="label">Choose identity</p>
+    <label>
+        <input type="radio" name="identity" value="anonymous" checked>
+        Anonymous
+    </label>
+    <label>
+        <input type="radio" name="identity" value="named">
+        Enter name
+    </label>
+
+    <input type="text" id="username" placeholder="your name" class="hidden">
+
+    <p class="label">Choose chat</p>
+    <label>
+        <input type="radio" name="chatType" value="global" checked>
+        Main feed
+    </label>
+    <label>
+        <input type="radio" name="chatType" value="room">
+        Group
+    </label>
+
+    <input type="text" id="roomName" placeholder="group name" class="hidden">
+
+    <button id="joinBtn">Enter Chat</button>
+</div>
+
+<!-- CHAT UI -->
+<div class="app hidden" id="chat">
+    <header>⚡ sjb.talks</header>
+
+    <div id="messages" class="messages"></div>
+
+    <!-- ✅ TYPING INDICATOR (CORRECT PLACE) -->
+    <div id="typing" class="typing hidden"></div>
+
+    <div class="input-bar">
+        <input type="text" id="message" placeholder="say something..." />
+        <button id="sendbtn">↵</button>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+// ELEMENTS
+const joinScreen = document.getElementById("joinScreen");
+const chatUI = document.getElementById("chat");
+
+const usernameInput = document.getElementById("username");
+const roomInput = document.getElementById("roomName");
+const joinBtn = document.getElementById("joinBtn");
+
+const messagesDiv = document.getElementById("messages");
+const input = document.getElementById("message");
+const sendBtn = document.getElementById("sendbtn");
+const typingDiv = document.getElementById("typing");
+
+let typingTimeout;
+
+// 🔹 SHOW / HIDE NAME INPUT
+document.querySelectorAll("input[name='identity']").forEach(radio => {
+    radio.addEventListener("change", () => {
+        const isNamed =
+            document.querySelector("input[name='identity']:checked").value === "named";
+        usernameInput.classList.toggle("hidden", !isNamed);
+    });
+});
+
+// 🔹 SHOW / HIDE ROOM INPUT
+document.querySelectorAll("input[name='chatType']").forEach(radio => {
+    radio.addEventListener("change", () => {
+        const isRoom =
+            document.querySelector("input[name='chatType']:checked").value === "room";
+        roomInput.classList.toggle("hidden", !isRoom);
+    });
+});
+
+// 🔹 JOIN CHAT
+joinBtn.addEventListener("click", () => {
+    const payload = {
+        identity: document.querySelector("input[name='identity']:checked").value,
+        username: usernameInput.value.trim(),
+        chatType: document.querySelector("input[name='chatType']:checked").value,
+        room: roomInput.value.trim()
+    };
+
+    socket.emit("join", payload);
+
+    joinScreen.classList.add("hidden");
+    chatUI.classList.remove("hidden");
+});
+
+// 🔹 SEND MESSAGE
+sendBtn.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+});
+
+// 🔹 TYPING DETECTION (THIS WAS MISSING ❌)
+input.addEventListener("input", () => {
+    socket.emit("typing");
+
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+        socket.emit("stop-typing");
+    }, 800);
+});
+
+function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    socket.emit("message", text);
+    input.value = "";
+    socket.emit("stop-typing");
+}
+
+// 🔹 SYSTEM MESSAGE
+socket.on("system", (text) => {
+    const div = document.createElement("div");
+    div.className = "msg system";
+    div.innerText = text;
+    messagesDiv.appendChild(div);
+});
+
+// 🔹 CHAT MESSAGE
+socket.on("message", (msg) => {
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.id = msg.id;
+
+    div.innerHTML = `
+        <div class="user">${msg.user}</div>
+        <div class="text">${msg.text}</div>
+        <div class="reactions">
+            ${Object.keys(msg.reactions).map(e =>
+                `<span data-emoji="${e}">${e} ${msg.reactions[e]}</span>`
+            ).join("")}
+        </div>
+    `;
+
+    div.querySelectorAll(".reactions span").forEach(span => {
+        span.addEventListener("click", () => {
+            socket.emit("react", {
+                messageId: msg.id,
+                emoji: span.dataset.emoji
+            });
+        });
+    });
+
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
+
+// 🔹 REACTION UPDATE
+socket.on("reaction-update", (msg) => {
+    const el = document.getElementById(msg.id);
+    if (!el) return;
+
+    Object.keys(msg.reactions).forEach(emoji => {
+        el.querySelector(`[data-emoji="${emoji}"]`)
+          .innerText = `${emoji} ${msg.reactions[emoji]}`;
+    });
+});
+
+// 🔹 TYPING UI
+socket.on("typing", (text) => {
+    typingDiv.innerText = text;
+    typingDiv.classList.remove("hidden");
+});
+
+socket.on("stop-typing", () => {
+    typingDiv.classList.add("hidden");
+});
+
+// 🔹 RECEIVE CHAT HISTORY
+socket.on("history", (messages) => {
+    messages.forEach(msg => {
+        renderMessage(msg);
+    });
+});
+
+</script>
+
+</body>
+</html>
