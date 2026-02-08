@@ -1,57 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sjb.talks</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sjb.talks</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- JOIN SCREEN -->
+<!-- =====================
+     JOIN SCREEN
+===================== -->
 <div class="join-screen" id="joinScreen">
-    <h2>⚡ sjb.talks</h2>
+  <h2>⚡ sjb.talks</h2>
+  <p class="subtitle">Chat • Play • Connect</p>
 
-    <p class="label">Choose identity</p>
-    <label>
-        <input type="radio" name="identity" value="anonymous" checked>
-        Anonymous
-    </label>
-    <label>
-        <input type="radio" name="identity" value="named">
-        Enter name
-    </label>
+  <button id="quickPlayBtn" class="quick-play">
+    ⚡ Quick Play
+  </button>
 
-    <input type="text" id="username" placeholder="your name" class="hidden">
+  <div class="features">
 
-    <p class="label">Choose chat</p>
-    <label>
-        <input type="radio" name="chatType" value="global" checked>
-        Main feed
-    </label>
-    <label>
-        <input type="radio" name="chatType" value="room">
-        Group
-    </label>
+    <div class="feature">
+      <span>💬</span>
+      <div>
+        <h4>Random Talk</h4>
+        <p>Join the main chat and talk to anyone online</p>
+      </div>
+    </div>
 
-    <input type="text" id="roomName" placeholder="group name" class="hidden">
+    <div class="feature">
+      <span>🔒</span>
+      <div>
+        <h4>Private Rooms</h4>
+        <p>Create a group room and chat privately</p>
+      </div>
+    </div>
 
-    <button id="joinBtn">Enter Chat</button>
+    <div class="feature">
+      <span>🎨</span>
+      <div>
+        <h4>Scribble Game</h4>
+        <p>Draw, guess, score & compete with friends</p>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="label">Choose identity</p>
+  <label><input type="radio" name="identity" value="anonymous" checked /> Anonymous</label>
+  <label><input type="radio" name="identity" value="named" /> Enter name</label>
+
+  <input type="text" id="username" placeholder="your name" class="hidden" />
+
+  <p class="label">Choose chat</p>
+  <label><input type="radio" name="chatType" value="global" checked /> Main feed</label>
+  <label>
+    <input type="radio" name="chatType" value="room" />
+    Group <span class="badge">🎨 Scribble</span>
+  </label>
+
+  <p class="hint">
+    💡 <b>Main feed</b> = random public chat <br />
+    🔒 <b>Group</b> = private room + Scribble
+  </p>
+
+  <input type="text" id="roomName" placeholder="group name" class="hidden" />
+
+  <button id="joinBtn">Enter Chat</button>
+
+  <div class="how-it-works">
+    <h4>🎨 How Scribble Works</h4>
+    <ul>
+      <li>1️⃣ Join a <b>Group</b></li>
+      <li>2️⃣ First player becomes <b>Host 👑</b></li>
+      <li>3️⃣ Host clicks <b>Start Scribble</b></li>
+      <li>4️⃣ Draw & guess fast to score 🔥</li>
+    </ul>
+  </div>
 </div>
 
-<!-- CHAT UI -->
-<div class="app hidden" id="chat">
-    <header>⚡ sjb.talks</header>
+<!-- =====================
+     GAME HEADER
+===================== -->
+<!-- =====================
+     GAME AREA (PLAY AREA)
+===================== -->
+<div class="play-area hidden" id="playArea">
 
-    <div id="messages" class="messages"></div>
+  <div class="sidebar">
+    <h4>Players</h4>
+    <ul id="scoreboard"></ul>
+  </div>
 
-    <!-- ✅ TYPING INDICATOR (CORRECT PLACE) -->
-    <div id="typing" class="typing hidden"></div>
-
-    <div class="input-bar">
-        <input type="text" id="message" placeholder="say something..." />
-        <button id="sendbtn">↵</button>
+  <div class="game-container" id="gameContainer">
+    <div class="board-header">
+      <div id="roundInfo">Round</div>
+      <div id="wordHint" class="word-hint"></div>
+      <div id="guessCounter" class="guess-counter">👀 0 / 0 guessed</div>
+      <div id="timer" class="timer">⏱ 60</div>
+      <button id="toggleScore" class="score-toggle" title="Toggle leaderboard">🏆</button>
     </div>
+
+    <!-- WORD CHOICE OVERLAY -->
+    <div id="wordChoice" class="word-choice hidden">
+      <h3>Choose a word</h3>
+      <div id="choices"></div>
+    </div>
+
+    <!-- DRAW TOOLS -->
+    <div id="tools" class="tools hidden">
+      <button class="color" data-color="#000000" style="background:#000" title="Black"></button>
+      <button class="color" data-color="#ff0000" style="background:#f00" title="Red"></button>
+      <button class="color" data-color="#00ff00" style="background:#0f0" title="Green"></button>
+      <button class="color" data-color="#0000ff" style="background:#00f" title="Blue"></button>
+      <button class="color" data-color="#ffff00" style="background:#ff0" title="Yellow"></button>
+
+      <button id="eraser" title="Eraser">🧽</button>
+
+      <input type="range" id="brushSize" min="2" max="12" value="4">
+    </div>
+
+    <canvas id="board" width="800" height="400"></canvas>
+  </div>
+
+</div>
+
+<!-- =====================
+     CHAT UI
+===================== -->
+<div class="app hidden" id="chat">
+  <header>⚡ sjb.talks</header>
+
+  <!-- 🎨 START GAME BUTTON -->
+  <button id="startGameBtn" class="start-game hidden">
+    🎨 Start Scribble
+  </button>
+
+  <div id="leaderboard" class="leaderboard hidden"></div>
+
+  <div id="messages" class="messages"></div>
+
+  <div id="typing" class="typing hidden"></div>
+
+  <div class="input-bar">
+    <input type="text" id="message" placeholder="say something..." />
+    <button id="sendbtn">↵</button>
+  </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -59,144 +154,462 @@
 <script>
 const socket = io();
 
-// ELEMENTS
+/* =====================
+   ELEMENTS
+===================== */
 const joinScreen = document.getElementById("joinScreen");
 const chatUI = document.getElementById("chat");
-
+const playArea = document.getElementById("playArea");
 const usernameInput = document.getElementById("username");
 const roomInput = document.getElementById("roomName");
 const joinBtn = document.getElementById("joinBtn");
-
 const messagesDiv = document.getElementById("messages");
 const input = document.getElementById("message");
 const sendBtn = document.getElementById("sendbtn");
 const typingDiv = document.getElementById("typing");
+const startGameBtn = document.getElementById("startGameBtn");
+const scoreboard = document.getElementById("scoreboard");
+const wordChoiceDiv = document.getElementById("wordChoice");
+const choicesDiv = document.getElementById("choices");
+const tools = document.getElementById("tools");
+const quickPlayBtn = document.getElementById("quickPlayBtn");
+const toggleScoreBtn = document.getElementById("toggleScore");
+
+/* =====================
+   JOIN LOGIC
+===================== */
+document.querySelectorAll("input[name='identity']").forEach(radio => {
+  radio.addEventListener("change", () => {
+    usernameInput.classList.toggle(
+      "hidden",
+      document.querySelector("input[name='identity']:checked").value !== "named"
+    );
+  });
+});
+
+document.querySelectorAll("input[name='chatType']").forEach(radio => {
+  radio.addEventListener("change", () => {
+    roomInput.classList.toggle(
+      "hidden",
+      document.querySelector("input[name='chatType']:checked").value !== "room"
+    );
+  });
+});
+
+joinBtn.addEventListener("click", () => {
+  const chatType =
+    document.querySelector("input[name='chatType']:checked").value;
+
+  socket.emit("join", {
+    identity: document.querySelector("input[name='identity']:checked").value,
+    username: usernameInput.value.trim(),
+    chatType,
+    room: roomInput.value.trim()
+  });
+
+  joinScreen.classList.add("hidden");
+  chatUI.classList.remove("hidden");
+
+  if (chatType === "room") {
+    playArea.classList.remove("hidden");
+  }
+});
+
+quickPlayBtn.addEventListener("click", () => {
+  socket.emit("quick-play");
+
+  joinScreen.classList.add("hidden");
+  playArea.classList.remove("hidden");
+  chatUI.classList.remove("hidden");
+});
+
+toggleScoreBtn.addEventListener("click", () => {
+  const sidebar = document.querySelector(".sidebar");
+  sidebar.classList.toggle("show");
+});
+
+/* =====================
+   START SCRIBBLE
+===================== */
+startGameBtn.addEventListener("click", () => {
+  socket.emit("start-game");
+  startGameBtn.disabled = true;
+});
+
+/* =====================
+   CHAT + GUESS
+===================== */
+sendBtn.addEventListener("click", sendMessage);
+input.addEventListener("keydown", e => e.key === "Enter" && sendMessage());
 
 let typingTimeout;
-
-// 🔹 SHOW / HIDE NAME INPUT
-document.querySelectorAll("input[name='identity']").forEach(radio => {
-    radio.addEventListener("change", () => {
-        const isNamed =
-            document.querySelector("input[name='identity']:checked").value === "named";
-        usernameInput.classList.toggle("hidden", !isNamed);
-    });
-});
-
-// 🔹 SHOW / HIDE ROOM INPUT
-document.querySelectorAll("input[name='chatType']").forEach(radio => {
-    radio.addEventListener("change", () => {
-        const isRoom =
-            document.querySelector("input[name='chatType']:checked").value === "room";
-        roomInput.classList.toggle("hidden", !isRoom);
-    });
-});
-
-// 🔹 JOIN CHAT
-joinBtn.addEventListener("click", () => {
-    const payload = {
-        identity: document.querySelector("input[name='identity']:checked").value,
-        username: usernameInput.value.trim(),
-        chatType: document.querySelector("input[name='chatType']:checked").value,
-        room: roomInput.value.trim()
-    };
-
-    socket.emit("join", payload);
-
-    joinScreen.classList.add("hidden");
-    chatUI.classList.remove("hidden");
-});
-
-// 🔹 SEND MESSAGE
-sendBtn.addEventListener("click", sendMessage);
-
-input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") sendMessage();
-});
-
-// 🔹 TYPING DETECTION (THIS WAS MISSING ❌)
 input.addEventListener("input", () => {
-    socket.emit("typing");
-
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
-        socket.emit("stop-typing");
-    }, 800);
+  socket.emit("typing");
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => socket.emit("stop-typing"), 800);
 });
 
 function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-    socket.emit("message", text);
-    input.value = "";
-    socket.emit("stop-typing");
+  const text = input.value.trim();
+  if (!text) return;
+
+  socket.emit("guess", text);
+  socket.emit("message", text);
+
+  input.value = "";
+  socket.emit("stop-typing");
 }
 
-// 🔹 SYSTEM MESSAGE
-socket.on("system", (text) => {
-    const div = document.createElement("div");
-    div.className = "msg system";
-    div.innerText = text;
-    messagesDiv.appendChild(div);
+/* =====================
+   MESSAGE RENDER
+===================== */
+function renderMessage(msg) {
+  const div = document.createElement("div");
+  div.className = "msg";
+  div.id = msg.id;
+
+  div.innerHTML = `
+    <div class="user">${msg.user}</div>
+    <div class="text">${msg.text}</div>
+    <div class="reactions">
+      ${Object.keys(msg.reactions).map(e =>
+        `<span data-emoji="${e}">${e} ${msg.reactions[e]}</span>`
+      ).join("")}
+    </div>
+  `;
+
+  div.querySelectorAll(".reactions span").forEach(span => {
+    span.onclick = () =>
+      socket.emit("react", {
+        messageId: msg.id,
+        emoji: span.dataset.emoji
+      });
+  });
+
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+/* =====================
+   SOCKET EVENTS
+===================== */
+socket.on("message", renderMessage);
+socket.on("history", msgs => msgs.forEach(renderMessage));
+
+socket.on("system", text => {
+  const div = document.createElement("div");
+  div.className = "msg system";
+  div.innerText = text;
+  messagesDiv.appendChild(div);
 });
 
-// 🔹 CHAT MESSAGE
-socket.on("message", (msg) => {
-    const div = document.createElement("div");
-    div.className = "msg";
-    div.id = msg.id;
+socket.on("typing", text => {
+  typingDiv.innerText = text;
+  typingDiv.classList.remove("hidden");
+});
 
+socket.on("stop-typing", () => typingDiv.classList.add("hidden"));
+
+socket.on("reaction-update", msg => {
+  const el = document.getElementById(msg.id);
+  if (!el) return;
+  Object.keys(msg.reactions).forEach(e => {
+    el.querySelector(`[data-emoji="${e}"]`).innerText =
+      `${e} ${msg.reactions[e]}`;
+  });
+});
+
+socket.on("host-status", ({ isHost }) => {
+  if (isHost) {
+    startGameBtn.classList.remove("hidden");
+  }
+});
+
+const leaderboardDiv = document.getElementById("leaderboard");
+
+socket.on("leaderboard", players => {
+  leaderboardDiv.classList.remove("hidden");
+  leaderboardDiv.innerHTML = "";
+
+  players.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "player" + (i === 0 ? " top" : "");
     div.innerHTML = `
-        <div class="user">${msg.user}</div>
-        <div class="text">${msg.text}</div>
-        <div class="reactions">
-            ${Object.keys(msg.reactions).map(e =>
-                `<span data-emoji="${e}">${e} ${msg.reactions[e]}</span>`
-            ).join("")}
-        </div>
+      <span>#${i + 1} ${p.name}</span>
+      <span>${p.score}</span>
     `;
+    leaderboardDiv.appendChild(div);
+  });
+});
 
-    div.querySelectorAll(".reactions span").forEach(span => {
-        span.addEventListener("click", () => {
-            socket.emit("react", {
-                messageId: msg.id,
-                emoji: span.dataset.emoji
-            });
-        });
+socket.on("choose-word", ({ words }) => {
+  wordChoiceDiv.classList.remove("hidden");
+  choicesDiv.innerHTML = "";
+
+  words.forEach(w => {
+    const btn = document.createElement("button");
+    btn.innerText = w;
+    btn.onclick = () => {
+      socket.emit("select-word", w);
+      wordChoiceDiv.classList.add("hidden");
+    };
+    choicesDiv.appendChild(btn);
+  });
+});
+
+/* =====================
+   CANVAS GAME
+===================== */
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+
+let drawing = false;
+let canDraw = false;
+let brushColor = "#000000";
+let brushSize = 4;
+let erasing = false;
+let strokeStarted = false;
+
+document.querySelectorAll(".color").forEach(btn => {
+  btn.addEventListener("click", () => {
+    brushColor = btn.dataset.color;
+    erasing = false;
+  });
+});
+
+document.getElementById("eraser").addEventListener("click", () => {
+  erasing = true;
+});
+
+document.getElementById("brushSize").addEventListener("input", e => {
+  brushSize = e.target.value;
+});
+let word = "";
+let revealed = [];
+let timer;
+
+socket.on("round-start", data => {
+  playArea.classList.remove("hidden");
+  canvas.classList.remove("hidden");
+  wordChoiceDiv.classList.add("hidden");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canDraw = data.role === "drawer";
+  tools.classList.toggle("hidden", !canDraw);
+
+  input.disabled = canDraw;
+  input.placeholder = canDraw
+    ? "You are drawing 🎨"
+    : "Type your guess...";
+
+  if (canDraw) {
+    word = data.word;
+    revealed = word.split("");
+  } else {
+    word = "";
+    revealed = new Array(data.length).fill("_");
+  }
+
+  updateHint();
+});
+
+function updateHint() {
+  document.getElementById("wordHint").innerText = revealed.join(" ");
+}
+
+// server-driven time updates
+socket.on("time", t => {
+  document.getElementById("timer").innerText = `⏱ ${t}`;
+});
+
+// server instructs which letter to reveal
+socket.on("reveal-letter", ({ index, letter }) => {
+  if (index >= 0 && index < revealed.length) {
+    revealed[index] = letter;
+    updateHint();
+  }
+});
+
+socket.on("guess-count", ({ guessed, total }) => {
+  document.getElementById("guessCounter").innerText =
+    `👀 ${guessed} / ${total} guessed`;
+});
+
+socket.on("score-update", scores => {
+  const board = document.getElementById("scoreboard");
+  board.innerHTML = "";
+
+  const sorted = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1]);
+
+  sorted.forEach(([id, score], index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>#${index + 1}</span>
+      <span>${score}</span>
+    `;
+    board.appendChild(li);
+  });
+});
+
+canvas.onmousedown = () => {
+  if (!canDraw) return;
+  drawing = true;
+  strokeStarted = false;
+};
+
+canvas.onmouseup = () => {
+  drawing = false;
+  strokeStarted = false;
+  ctx.beginPath();
+};
+
+canvas.onmouseleave = () => {
+  drawing = false;
+  strokeStarted = false;
+  ctx.beginPath();
+};
+canvas.onmousemove = e => {
+  if (!drawing || !canDraw) return;
+
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
+
+  ctx.lineWidth = brushSize;
+  ctx.lineCap = "round";
+  ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
+  ctx.strokeStyle = brushColor;
+
+  if (!strokeStarted) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    strokeStarted = true;
+
+    socket.emit("draw", {
+      x,
+      y,
+      color: brushColor,
+      size: brushSize,
+      mode: erasing ? "erase" : "draw",
+      start: true
     });
+    return;
+  }
 
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  socket.emit("draw", {
+    x,
+    y,
+    color: brushColor,
+    size: brushSize,
+    mode: erasing ? "erase" : "draw",
+    start: false
+  });
+};
+
+// 📱 TOUCH SUPPORT
+canvas.addEventListener("touchstart", e => {
+  if (!canDraw) return;
+  drawing = true;
+  strokeStarted = false;
+
+  const t = e.touches[0];
+  const r = canvas.getBoundingClientRect();
+  const x = t.clientX - r.left;
+  const y = t.clientY - r.top;
+
+  ctx.lineWidth = brushSize;
+  ctx.lineCap = "round";
+  ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
+  ctx.strokeStyle = brushColor;
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  strokeStarted = true;
+
+  socket.emit("draw", {
+    x,
+    y,
+    color: brushColor,
+    size: brushSize,
+    mode: erasing ? "erase" : "draw",
+    start: true
+  });
 });
 
-// 🔹 REACTION UPDATE
-socket.on("reaction-update", (msg) => {
-    const el = document.getElementById(msg.id);
-    if (!el) return;
+canvas.addEventListener("touchmove", e => {
+  if (!drawing || !canDraw) return;
+  e.preventDefault();
 
-    Object.keys(msg.reactions).forEach(emoji => {
-        el.querySelector(`[data-emoji="${emoji}"]`)
-          .innerText = `${emoji} ${msg.reactions[emoji]}`;
+  const t = e.touches[0];
+  const r = canvas.getBoundingClientRect();
+  const x = t.clientX - r.left;
+  const y = t.clientY - r.top;
+
+  ctx.lineWidth = brushSize;
+  ctx.lineCap = "round";
+  ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
+  ctx.strokeStyle = brushColor;
+
+  if (!strokeStarted) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    strokeStarted = true;
+
+    socket.emit("draw", {
+      x,
+      y,
+      color: brushColor,
+      size: brushSize,
+      mode: erasing ? "erase" : "draw",
+      start: true
     });
+    return;
+  }
+
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  socket.emit("draw", {
+    x,
+    y,
+    color: brushColor,
+    size: brushSize,
+    mode: erasing ? "erase" : "draw",
+    start: false
+  });
 });
 
-// 🔹 TYPING UI
-socket.on("typing", (text) => {
-    typingDiv.innerText = text;
-    typingDiv.classList.remove("hidden");
+canvas.addEventListener("touchend", () => {
+  drawing = false;
+  strokeStarted = false;
+  ctx.beginPath();
 });
 
-socket.on("stop-typing", () => {
-    typingDiv.classList.add("hidden");
-});
+socket.on("draw", ({ x, y, color, size, start, mode }) => {
+  ctx.lineWidth = size;
+  ctx.lineCap = "round";
+  ctx.globalCompositeOperation = mode === "erase" ? "destination-out" : "source-over";
+  ctx.strokeStyle = color || "#000000";
 
-// 🔹 RECEIVE CHAT HISTORY
-socket.on("history", (messages) => {
-    messages.forEach(msg => {
-        renderMessage(msg);
-    });
-});
+  if (start) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    return;
+  }
 
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+});
 </script>
 
 </body>
